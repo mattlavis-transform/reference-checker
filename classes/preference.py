@@ -1,4 +1,3 @@
-from dataclasses import replace
 import re
 import classes.globals as g
 from classes.database import Database
@@ -10,6 +9,7 @@ class Preference(object):
         self.duty = ""
         self.staging = []
         self.notes = ""
+        self.instance_count = 1
 
     def cleanse(self):
         self.goods_nomenclature_item_id = self.goods_nomenclature_item_id.strip()
@@ -17,14 +17,16 @@ class Preference(object):
         self.goods_nomenclature_item_id = re.sub(r'\s', '', self.goods_nomenclature_item_id)
         self.goods_nomenclature_item_id = self.goods_nomenclature_item_id.ljust(10, "0")
 
-    def xcleanse(self):
-        self.quota_order_number_id = self.quota_order_number_id.replace(".", "")
-        self.quota_order_number_id = self.quota_order_number_id.split("\n")[0]
-        self.quota_order_number_id = self.quota_order_number_id.strip()
-        self.cleanse_origin()
-        self.cleanse_volume()
-        self.cleanse_duty()
-        
+    def as_dict(self):
+        s = {
+            "goods_nomenclature_item_id": self.goods_nomenclature_item_id,
+            "duty": self.duty,
+            "staging": self.staging,
+            "notes": self.notes,
+            "instance_count": self.instance_count
+        }
+        return s
+    
     def cleanse_origin(self):
         replacements = [
             { "from": "USA", "to": "United States" },

@@ -2,6 +2,10 @@ import os
 import json
 from dotenv import load_dotenv
 import xlsxwriter
+from docx import Document
+from docx.shared import Cm
+from docx.enum.section import WD_ORIENT
+from docx.oxml.shared import OxmlElement, qn
 from classes.quota_checker import QuotaChecker
 from classes.preference_checker import PreferenceChecker
 from classes.classification_checker import ClassificationChecker
@@ -131,3 +135,22 @@ class Application(object):
                 jsonFile.close()
 
         workbook.close()
+
+    def process_null(self, s):
+        if s is None:
+            return ""
+        else:
+            if isinstance(s, list):
+                s = ", ".join(s)
+
+            return s.strip()
+
+    def set_repeat_table_header(self, row):
+        """ set repeat table row on every new page
+        """
+        tr = row._tr
+        trPr = tr.get_or_add_trPr()
+        tblHeader = OxmlElement('w:tblHeader')
+        tblHeader.set(qn('w:val'), "true")
+        trPr.append(tblHeader)
+        return row
